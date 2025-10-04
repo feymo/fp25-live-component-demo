@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard des ventes{% endblock %}
+
+{% block body %}
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>📊 Dashboard des ventes</h1>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total }}</div>
+                <div class="stat-label">Ventes totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.totalAmount|number_format(0, ',', ' ') }} €</div>
+                <div class="stat-label">Chiffre d'affaires</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.averageAmount|number_format(0, ',', ' ') }} €</div>
+                <div class="stat-label">Panier moyen</div>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <div class="table-container">
+                <table class="sales-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Client</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>#{{ sale.id }}</td>
+                            <td>{{ sale.date|date('d/m/Y') }}</td>
+                            <td>{{ sale.client }}</td>
+                            <td class="amount">{{ sale.amount|number_format(2, ',', ' ') }} €</td>
+                            <td>
+                                {% if sale.status == 'paid' %}
+                                    <span class="badge badge-success">✅ Payé</span>
+                                {% elseif sale.status == 'pending' %}
+                                    <span class="badge badge-warning">⏳ En attente</span>
+                                {% else %}
+                                    <span class="badge badge-danger">❌ Annulé</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        {% if totalPages > 1 %}
+            <div class="pagination">
+                <div class="pagination-info">
+                    Affichage {{ ((currentPage - 1) * itemsPerPage) + 1 }}
+                    à {{ min(currentPage * itemsPerPage, totalSales) }}
+                    sur {{ totalSales }} ventes
+                </div>
+
+                <div class="pagination-controls">
+                    {% if currentPage > 1 %}
+                        <a href="{{ path('app_dashboard', {page: 1}) }}" class="btn-page">
+                            ⏮️ Première
+                        </a>
+                        <a href="{{ path('app_dashboard', {page: currentPage - 1}) }}" class="btn-page">
+                            ◀️ Précédente
+                        </a>
+                    {% endif %}
+
+                    <span class="current-page">
+                    Page {{ currentPage }} / {{ totalPages }}
+                </span>
+
+                    {% if currentPage < totalPages %}
+                        <a href="{{ path('app_dashboard', {page: currentPage + 1}) }}" class="btn-page">
+                            Suivante ▶️
+                        </a>
+                        <a href="{{ path('app_dashboard', {page: totalPages}) }}" class="btn-page">
+                            Dernière ⏭️
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

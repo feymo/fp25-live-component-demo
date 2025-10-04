@@ -1,0 +1,3 @@
+services:
+  database:
+    image: ${CI_REGISTRY_IMAGE}/database
