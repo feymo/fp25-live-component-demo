@@ -4,20 +4,22 @@
             <h1>📊 Dashboard des ventes</h1>
         </header>
     </div>
-        <div class="stats-bar">
-            <div class="stat-card">
-                <div class="stat-value">{{ this.stats.total }}</div>
-                <div class="stat-label">Ventes totales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ this.stats.totalAmount|number_format(0, ',', ' ') }} €</div>
-                <div class="stat-label">Chiffre d'affaires</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ this.stats.averageAmount|number_format(0, ',', ' ') }} €</div>
-                <div class="stat-label">Panier moyen</div>
-            </div>
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-value">{{ this.stats.total }}</div>
+            <div class="stat-label">Ventes totales</div>
         </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ this.stats.totalAmount|number_format(0, ',', ' ') }} €</div>
+            <div class="stat-label">Chiffre d'affaires</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ this.stats.averageAmount|number_format(0, ',', ' ') }} €</div>
+            <div class="stat-label">Panier moyen</div>
+        </div>
+    </div>
+
+    <twig:SalesChart :query="query"/>
 
     <div class="search-box">
         <input

@@ -270,6 +270,10 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+.chart-header {
+    margin-bottom: 1.5rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     body {
