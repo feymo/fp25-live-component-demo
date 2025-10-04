@@ -4,6 +4,8 @@ namespace App\Twig\Components;
 
 use App\Repository\SaleRepository;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
@@ -18,6 +20,12 @@ class SalesTable
     #[LiveProp(writable: true, url: true)]
     public int $page = 1;
 
+    #[LiveProp(writable: true)]
+    public string $sortBy = 'id';
+
+    #[LiveProp(writable: true)]
+    public string $sortDir = 'asc';
+
     private const int ITEMS_PER_PAGE = 15;
 
     public function __construct(
@@ -27,21 +35,12 @@ class SalesTable
 
     public function getSales(): array
     {
-        $allSales = $this->saleRepository->findAll();
-        if ('' === $this->query) {
-            return $allSales;
-        }
-
-        $sales = array_filter($allSales, function($sale) {
-            return stripos($sale->getClient(), $this->query) !== false;
-        });
-
-        return array_values($sales);
+        return $this->saleRepository->findByQueryWithOrderBy($this->query, $this->sortBy, $this->sortDir);
     }
 
     public function getPaginatedSales(): array
     {
-        $allSales = $this->getSales();
+        $allSales = $this->saleRepository->findByQueryWithOrderBy($this->query, $this->sortBy, $this->sortDir);
         $offset = ($this->page - 1) * self::ITEMS_PER_PAGE;
 
         return array_slice($allSales, $offset, self::ITEMS_PER_PAGE);
@@ -86,5 +85,30 @@ class SalesTable
     public function getStats(): array
     {
         return $this->saleRepository->getStats();
+    }
+
+    #[LiveAction]
+    public function sort(#[LiveArg]string $column): void
+    {
+        if ($this->sortBy === $column) {
+            $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDir = 'asc';
+        }
+    }
+
+    public function getSortIcon(string $column): string
+    {
+        if ($this->sortBy !== $column) {
+            return '↕️';
+        }
+
+        return $this->sortDir === 'asc' ? '⬆️' : '⬇️';
+    }
+
+    public function isSortedBy(string $column): bool
+    {
+        return $this->sortBy === $column;
     }
 }

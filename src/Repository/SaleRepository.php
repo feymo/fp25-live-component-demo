@@ -38,18 +38,18 @@ final class SaleRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function findByQuery(string $query, int $page = 1, int $limit = 15): array
+    public function findByQueryWithOrderBy(string $query = '', string $sortBy = 'id', string $sortOrder = 'asc'): array
     {
-        $offset = ($page - 1) * $limit;
+        $queryBuilder = $this->createQueryBuilder('s')
+            ->orderBy(\sprintf('s.%s', $sortBy), $sortOrder);
 
-        return $this->createQueryBuilder('s')
-            ->where('s.client LIKE :query')
-            ->setParameter('query', '%' . $query . '%')
-            ->orderBy('s.date', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+        if ('' !== $query) {
+            $queryBuilder
+                ->where('s.client LIKE :query')
+                ->setParameter('query', \sprintf('%%%s%%', $query));
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     public function countByQuery(string $query): int

@@ -40,11 +40,50 @@
             <table class="sales-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>Client</th>
-                    <th>Montant</th>
-                    <th>Statut</th>
+                    <th
+                        data-action="click->live#action"
+                        data-live-action-param="sort"
+                        data-live-column-param="id"
+                        class="sortable {{ this.isSortedBy('id') ? 'sorted' : '' }}"
+                    >
+                        ID {{ this.getSortIcon('id') }}
+                    </th>
+
+                    <th
+                        data-action="click->live#action"
+                        data-live-action-param="sort"
+                        data-live-column-param="date"
+                        class="sortable {{ this.isSortedBy('date') ? 'sorted' : '' }}"
+                    >
+                        Date {{ this.getSortIcon('date') }}
+                    </th>
+
+                    <th
+                        data-action="click->live#action"
+                        data-live-action-param="sort"
+                        data-live-column-param="client"
+                        class="sortable {{ this.isSortedBy('client') ? 'sorted' : '' }}"
+                    >
+                        Client {{ this.getSortIcon('client') }}
+                    </th>
+
+                    <th
+                        data-action="click->live#action"
+                        data-live-action-param="sort"
+                        data-live-column-param="amount"
+                        class="sortable {{ this.isSortedBy('amount') ? 'sorted' : '' }}"
+                    >
+                        Montant {{ this.getSortIcon('amount') }}
+                    </th>
+
+                    <th
+                        data-action="click->live#action"
+                        data-live-action-param="sort"
+                        data-live-column-param="status"
+                        class="sortable {{ this.isSortedBy('status') ? 'sorted' : '' }}"
+                    >
+                        Statut {{ this.getSortIcon('status') }}
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
