@@ -1,0 +1,133 @@
+<div {{ attributes.defaults({class: 'dashboard-container'}) }}>
+    <div class="dashboard-header">
+        <header class="dashboard-header">
+            <h1>📊 Dashboard des ventes</h1>
+        </header>
+    </div>
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value">{{ this.stats.total }}</div>
+                <div class="stat-label">Ventes totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ this.stats.totalAmount|number_format(0, ',', ' ') }} €</div>
+                <div class="stat-label">Chiffre d'affaires</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ this.stats.averageAmount|number_format(0, ',', ' ') }} €</div>
+                <div class="stat-label">Panier moyen</div>
+            </div>
+        </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            data-model="query"
+            placeholder="🔍 Rechercher par nom de client..."
+            class="search-input"
+        >
+        {% if query %}
+            <span class="search-hint">
+                Filtré par : <strong>{{ query }}</strong>
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table class="sales-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sale in this.paginatedSales %}
+                    <tr>
+                        <td>#{{ sale.id }}</td>
+                        <td>{{ sale.date|date('d/m/Y') }}</td>
+                        <td>{{ sale.client }}</td>
+                        <td class="amount">{{ sale.amount|number_format(2, ',', ' ') }} €</td>
+                        <td>
+                            {% if sale.status == 'paid' %}
+                                <span class="badge badge-success">✅ Payé</span>
+                            {% elseif sale.status == 'pending' %}
+                                <span class="badge badge-warning">⏳ En attente</span>
+                            {% else %}
+                                <span class="badge badge-danger">❌ Annulé</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            Aucune vente trouvée pour "{{ this.query }}"
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div data-loading class="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    {% if this.totalPages > 1 %}
+        <div class="pagination">
+            <div class="pagination-info">
+                Affichage {{ ((page - 1) * 15) + 1 }}
+                à {{ min(page * 15, this.totalCount) }}
+                sur {{ this.totalCount }} ventes
+            </div>
+
+            <div class="pagination-controls">
+                {% if page > 1 %}
+                    <button
+                        data-action="live#update"
+                        data-model="page"
+                        data-value="1"
+                        class="btn-page"
+                    >
+                        ⏮️ Première
+                    </button>
+                    <button
+                        data-action="live#update"
+                        data-model="page"
+                        data-value="{{ page - 1 }}"
+                        class="btn-page"
+                    >
+                        ◀️ Précédente
+                    </button>
+                {% endif %}
+
+                <span class="current-page">
+                    Page {{ page }} / {{ this.totalPages }}
+                </span>
+
+                {% if page < this.totalPages %}
+                    <button
+                        data-action="live#update"
+                        data-model="page"
+                        data-value="{{ page + 1 }}"
+                        class="btn-page"
+                    >
+                        Suivante ▶️
+                    </button>
+                    <button
+                        data-action="live#update"
+                        data-model="page"
+                        data-value="{{ this.totalPages }}"
+                        class="btn-page"
+                    >
+                        Dernière ⏭️
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
