@@ -19,19 +19,48 @@
         </div>
     </div>
 
-    <twig:SalesChart :query="query"/>
+    <twig:SalesChart :query="query" :period="period" :status="status" />
 
-    <div class="search-box">
-        <input
-            type="text"
-            data-model="query"
-            placeholder="🔍 Rechercher par nom de client..."
-            class="search-input"
-        >
-        {% if query %}
-            <span class="search-hint">
-                Filtré par : <strong>{{ query }}</strong>
-            </span>
+    <div class="filters-bar">
+        <div class="filter-group">
+            <label>🔍 Recherche</label>
+            <input
+                type="text"
+                data-model="query"
+                placeholder="Rechercher un client..."
+                class="filter-input"
+            >
+        </div>
+
+        <div class="filter-group">
+            <label>📊 Statut</label>
+            <select data-model="status" class="filter-select">
+                <option value="">Tous les statuts</option>
+                <option value="paid">✅ Payé</option>
+                <option value="pending">⏳ En attente</option>
+                <option value="cancelled">❌ Annulé</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>📅 Période</label>
+            <select data-model="period" class="filter-select">
+                <option value="all">Toute la période</option>
+                <option value="today">Aujourd'hui</option>
+                <option value="week">7 derniers jours</option>
+                <option value="month">30 derniers jours</option>
+                <option value="quarter">3 derniers mois</option>
+            </select>
+        </div>
+
+        {% if this.hasActiveFilters %}
+            <button
+                data-action="live#action"
+                data-live-action-param="resetFilters"
+                class="btn-reset"
+            >
+                🔄 Réinitialiser
+            </button>
         {% endif %}
     </div>
 

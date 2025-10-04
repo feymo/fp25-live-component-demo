@@ -38,8 +38,13 @@ final class SaleRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function findByQueryWithOrderBy(string $query = '', string $sortBy = 'id', string $sortOrder = 'asc'): array
-    {
+    public function findByQueryWithOrderBy(
+        string $query = '',
+        string $sortBy = 'id',
+        string $sortOrder = 'asc',
+        string $period = 'all',
+        string $status = ''
+    ): array {
         $queryBuilder = $this->createQueryBuilder('s')
             ->orderBy(\sprintf('s.%s', $sortBy), $sortOrder);
 
@@ -47,6 +52,26 @@ final class SaleRepository extends ServiceEntityRepository
             $queryBuilder
                 ->where('s.client LIKE :query')
                 ->setParameter('query', \sprintf('%%%s%%', $query));
+        }
+
+        if ($period !== 'all') {
+            $now = new \DateTime();
+            $startDate = match($period) {
+                'today' => (clone $now)->setTime(0, 0),
+                'week' => (clone $now)->modify('-7 days'),
+                'month' => (clone $now)->modify('-1 month'),
+                'quarter' => (clone $now)->modify('-3 months'),
+                default => null,
+            };
+            $queryBuilder
+                ->andWhere('s.date >= :start')
+                ->setParameter('start', $startDate);
+        }
+
+        if ($status !== '') {
+            $queryBuilder
+                ->andWhere('s.status = :status')
+                ->setParameter('status', $status);
         }
 
         return $queryBuilder->getQuery()->getResult();

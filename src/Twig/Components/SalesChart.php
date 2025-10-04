@@ -18,6 +18,12 @@ final class SalesChart
     #[LiveProp(updateFromParent: true)]
     public string $query = '';
 
+    #[LiveProp(updateFromParent: true)]
+    public string $status = '';
+
+    #[LiveProp(updateFromParent: true)]
+    public string $period = 'all';
+
     public function __construct(
         private readonly SaleRepository $saleRepository,
         private readonly ChartBuilderInterface $chartBuilder,
@@ -29,16 +35,11 @@ final class SalesChart
      */
     private function getFilteredSales(): array
     {
-        $allSales = $this->saleRepository->findAll();
-        if ('' === $this->query) {
-            return $allSales;
-        }
-
-        $sales = array_filter($allSales, function($sale) {
-            return stripos($sale->getClient(), $this->query) !== false;
-        });
-
-        return array_values($sales);
+        return $this->saleRepository->findByQueryWithOrderBy(
+            $this->query,
+            period: $this->period,
+            status: $this->status
+        );
     }
 
     public function getChart(): Chart

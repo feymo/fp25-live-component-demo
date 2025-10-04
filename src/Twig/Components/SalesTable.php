@@ -26,6 +26,12 @@ class SalesTable
     #[LiveProp(writable: true)]
     public string $sortDir = 'asc';
 
+    #[LiveProp(writable: true, url: true)]
+    public string $status = '';
+
+    #[LiveProp(writable: true, url: true)]
+    public string $period = 'all';
+
     private const int ITEMS_PER_PAGE = 15;
 
     public function __construct(
@@ -35,12 +41,18 @@ class SalesTable
 
     public function getSales(): array
     {
-        return $this->saleRepository->findByQueryWithOrderBy($this->query, $this->sortBy, $this->sortDir);
+        return $this->saleRepository->findByQueryWithOrderBy(
+            $this->query,
+            $this->sortBy,
+            $this->sortDir,
+            $this->period,
+            $this->status
+        );
     }
 
     public function getPaginatedSales(): array
     {
-        $allSales = $this->saleRepository->findByQueryWithOrderBy($this->query, $this->sortBy, $this->sortDir);
+        $allSales = $this->getSales();
         $offset = ($this->page - 1) * self::ITEMS_PER_PAGE;
 
         return array_slice($allSales, $offset, self::ITEMS_PER_PAGE);
@@ -98,6 +110,16 @@ class SalesTable
         }
     }
 
+    #[LiveAction]
+    public function resetFilters(): void
+    {
+        $this->query = '';
+        $this->status = '';
+        $this->period = 'all';
+        $this->sortBy = 'date';
+        $this->sortDir = 'desc';
+    }
+
     public function getSortIcon(string $column): string
     {
         if ($this->sortBy !== $column) {
@@ -110,5 +132,17 @@ class SalesTable
     public function isSortedBy(string $column): bool
     {
         return $this->sortBy === $column;
+    }
+
+    public function getStatusCount(string $status): int
+    {
+        return count(array_filter($this->getSales(), static fn($sale) => $sale['status'] === $status));
+    }
+
+    public function hasActiveFilters(): bool
+    {
+        return $this->query !== ''
+            || $this->status !== ''
+            || $this->period !== 'all';
     }
 }
