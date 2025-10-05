@@ -1,4 +1,4 @@
-<div {{ attributes.defaults({class: 'dashboard-container'}) }}>
+<div {{ attributes.defaults({class: 'dashboard-container'}) }} data-poll="delay(10000)|$render">
     <div class="dashboard-header">
         <header class="dashboard-header">
             <h1>📊 Dashboard des ventes</h1>
@@ -19,7 +19,13 @@
         </div>
     </div>
 
-    <twig:SalesChart :query="query" :period="period" :status="status" />
+    {% if this.hasAddedNewSale %}
+        <div class="new-sales-alert">
+            🎉 Nouvelle vente détectée !
+        </div>
+    {% endif %}
+
+    <twig:SalesChart :query="query" :period="period" :status="status" :totalResults="this.stats.total" />
 
     <div class="filters-bar">
         <div class="filter-group">

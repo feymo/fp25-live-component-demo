@@ -24,6 +24,9 @@ final class SalesChart
     #[LiveProp(updateFromParent: true)]
     public string $period = 'all';
 
+    #[LiveProp(updateFromParent: true)]
+    public int $totalResults = 0;
+
     public function __construct(
         private readonly SaleRepository $saleRepository,
         private readonly ChartBuilderInterface $chartBuilder,
@@ -98,6 +101,6 @@ final class SalesChart
 
     public function getSalesCount(): int
     {
-        return count($this->getFilteredSales());
+        return $this->totalResults;
     }
 }

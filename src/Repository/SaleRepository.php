@@ -97,4 +97,13 @@ final class SaleRepository extends ServiceEntityRepository
             'averageAmount' => $qb->select('AVG(s.amount)')->getQuery()->getSingleScalarResult(),
         ];
     }
+
+    public function findByAboveDateLimit(\DateTime $dateTime): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.date >= :date')
+            ->setParameter('date', $dateTime)
+            ->getQuery()
+            ->getResult();
+    }
 }

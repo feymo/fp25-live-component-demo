@@ -134,15 +134,18 @@ class SalesTable
         return $this->sortBy === $column;
     }
 
-    public function getStatusCount(string $status): int
-    {
-        return count(array_filter($this->getSales(), static fn($sale) => $sale['status'] === $status));
-    }
-
     public function hasActiveFilters(): bool
     {
         return $this->query !== ''
             || $this->status !== ''
             || $this->period !== 'all';
+    }
+
+    public function hasAddedNewSale(): bool
+    {
+        $limit = (new \DateTime('15 seconds ago'));
+        $latest = $this->saleRepository->findByAboveDateLimit($limit);
+
+        return \count($latest) > 0;
     }
 }
